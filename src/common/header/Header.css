@@ -1,10 +1,34 @@
 .header {
-    padding: 15px;
+    padding: 10px;
+    padding-right: 15px;
+    padding-left: 15px;
     background-color: hsl(199deg 20% 18%);
     color: aliceblue;
     display: flex;
     justify-content: space-between;
 }
-.searchBar {
+
+.search-bar {
     width: 350px;
+}
+
+.tabs {
+    margin-bottom: 20px;
+}
+
+.tab-container {
+    padding: 0;
+    text-align: center;
+}
+
+.red {
+    color: red;
+}
+
+.dispNone {
+    display: None;
+}
+
+.dispBlock {
+    display: block;
 }
