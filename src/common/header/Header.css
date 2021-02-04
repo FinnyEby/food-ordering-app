@@ -1,0 +1,10 @@
+.header {
+    padding: 15px;
+    background-color: hsl(199deg 20% 18%);
+    color: aliceblue;
+    display: flex;
+    justify-content: space-between;
+}
+.searchBar {
+    width: 350px;
+}
