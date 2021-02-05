@@ -11,6 +11,9 @@
 .search-bar {
     width: 350px;
 }
+div .search-bar ::after{
+    border-bottom: 2px solid white !important;
+  }
 
 .tabs {
     margin-bottom: 20px;

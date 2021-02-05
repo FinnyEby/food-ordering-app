@@ -156,9 +156,6 @@ class Header extends Component {
                 fullWidth
                 placeholder="Search by Restaurant Name"
                 style={headerInputStyle}
-                inputProps={{
-                  underline: "white",
-                }}
                 startAdornment={
                   <InputAdornment>
                     <SearchIcon />
