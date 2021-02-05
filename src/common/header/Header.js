@@ -1,5 +1,5 @@
-import React, { Component } from "react";
 import "./Header.css";
+import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import FastfoodIcon from "@material-ui/icons/Fastfood";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -14,6 +14,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import PropTypes from "prop-types";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import validator from 'validator';
 
 const customModalStyle = {
   content: {
@@ -28,6 +29,7 @@ const customModalStyle = {
 
 const headerInputStyle = {
   color: "white",
+  height: 35
 };
 
 const TabContainer = (props) => {
@@ -57,10 +59,13 @@ class Header extends Component {
       lastName: "",
       email: "",
       emailRequired: "dispNone",
+      inValidEmail: "dispNone",
       signupPassword: "",
       signupPasswordRequired: "dispNone",
+      weakPassword: "dispNone",
       signupcontactNo: "",
-      signupcontactNoRequired: "dispNone"
+      signupcontactNoRequired: "dispNone",
+      inValidsignupcontactNo: "dispNone"
     };
   }
 
@@ -70,19 +75,22 @@ class Header extends Component {
 
   closeModalHandler = () => {
     this.setState({ modalIsOpen: false });
-    this.setState({contactNumber: ""})
-    this.setState({contactNoRequired: "dispNone"})
-    this.setState({password: ""})
-    this.setState({passwordRequired: "dispNone"})
-    this.setState({firstName: ""})
-    this.setState({firstNameRequired: "dispNone"})
-    this.setState({lastName: ""})
-    this.setState({email: ""})
-    this.setState({emailRequired: "dispNone"})
-    this.setState({signupPassword: ""})
-    this.setState({signupPasswordRequired: "dispNone"})
-    this.setState({signupcontactNo: ""})
-    this.setState({signupcontactNoRequired: "dispNone"})
+    this.setState({ contactNumber: "" })
+    this.setState({ contactNoRequired: "dispNone" })
+    this.setState({ password: "" })
+    this.setState({ passwordRequired: "dispNone" })
+    this.setState({ firstName: "" })
+    this.setState({ firstNameRequired: "dispNone" })
+    this.setState({ lastName: "" })
+    this.setState({ email: "" })
+    this.setState({ emailRequired: "dispNone" })
+    this.setState({ inValidEmail: "dispNone" })
+    this.setState({ signupPassword: "" })
+    this.setState({ signupPasswordRequired: "dispNone" })
+    this.setState({ weakPassword: "dispNone" })
+    this.setState({ signupcontactNo: "" })
+    this.setState({ signupcontactNoRequired: "dispNone" })
+    this.setState({ inValidsignupcontactNo: "dispNone" })
   };
 
   tabChangeHandler = (e, value) => {
@@ -138,7 +146,27 @@ class Header extends Component {
       : this.setState({ signupPasswordRequired: "dispNone" });
     this.state.signupcontactNo === ""
       ? this.setState({ signupcontactNoRequired: "dispBlock" })
-      : this.setState({ signupcontactNoRequired: "dispNone" });      
+      : this.setState({ signupcontactNoRequired: "dispNone" });
+    if (this.state.email.length > 0) {
+      validator.isEmail(this.state.email)
+        ? this.setState({ inValidEmail: "dispNone" })
+        : this.setState({ inValidEmail: "dispBlock" })
+    }
+    if (this.state.signupPassword.length > 0) {
+      let password = this.state.signupPassword
+      let weakPassword = false
+      if (password.length < 8)
+        weakPassword = true
+
+      weakPassword
+        ? this.setState({ weakPassword: "dispBlock" })
+        : this.setState({ weakPassword: "dispNone" })
+    }
+    if (this.state.signupcontactNo.length > 0) {
+      validator.isNumeric(this.state.signupcontactNo) && this.state.signupcontactNo.length === 10
+        ? this.setState({ inValidsignupcontactNo: "dispNone" })
+        : this.setState({ inValidsignupcontactNo: "dispBlock" })
+    }
   };
 
   render() {
@@ -229,20 +257,20 @@ class Header extends Component {
           )}
           {this.state.value === 1 && (
             <TabContainer>
-            <FormControl required>
-              <InputLabel>First Name</InputLabel>
-              <Input
-                id="contactNo"
-                type="text"
-                value={this.state.firstName}
-                onChange={this.firstNameChangeHandler}
-              />
-              <FormHelperText className={this.state.firstNameRequired}>
-                <span className="red">required</span>
-              </FormHelperText>
-            </FormControl>
-            <br />
-            <br />
+              <FormControl required>
+                <InputLabel>First Name</InputLabel>
+                <Input
+                  id="contactNo"
+                  type="text"
+                  value={this.state.firstName}
+                  onChange={this.firstNameChangeHandler}
+                />
+                <FormHelperText className={this.state.firstNameRequired}>
+                  <span className="red">required</span>
+                </FormHelperText>
+              </FormControl>
+              <br />
+              <br />
               <FormControl>
                 <InputLabel>Last Name</InputLabel>
                 <Input
@@ -265,13 +293,16 @@ class Header extends Component {
                 <FormHelperText className={this.state.emailRequired}>
                   <span className="red">required</span>
                 </FormHelperText>
+                <FormHelperText className={this.state.inValidEmail}>
+                  <span className="red">Invalid Email</span>
+                </FormHelperText>
               </FormControl>
               <br />
               <br />
               <FormControl required>
-                <InputLabel htmlFor="password">Password</InputLabel>
+                <InputLabel htmlFor="signupPassword">Password</InputLabel>
                 <Input
-                  id="password"
+                  id="signupPassword"
                   type="password"
                   value={this.state.signupPassword}
                   onChange={this.signupPasswordChangeHandler}
@@ -279,19 +310,25 @@ class Header extends Component {
                 <FormHelperText className={this.state.signupPasswordRequired}>
                   <span className="red">required</span>
                 </FormHelperText>
+                <FormHelperText className={this.state.weakPassword}>
+                  <span className="red">Password must contain at least one capital letter, one small letter, one number, and one special character</span>
+                </FormHelperText>
               </FormControl>
               <br />
               <br />
               <FormControl required>
                 <InputLabel>Contact No.</InputLabel>
                 <Input
-                  id="contactNo"
+                  id="signupcontact"
                   type="text"
                   value={this.state.signupcontactNo}
                   onChange={this.signupcontactNoChangeHandler}
                 />
                 <FormHelperText className={this.state.signupcontactNoRequired}>
                   <span className="red">required</span>
+                </FormHelperText>
+                <FormHelperText className={this.state.inValidsignupcontactNo}>
+                  <span className="red">Contact No. must contain only numbers and must be 10 digits long</span>
                 </FormHelperText>
               </FormControl>
               <br />

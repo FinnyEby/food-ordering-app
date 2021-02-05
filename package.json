@@ -8,7 +8,8 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-modal": "^3.12.1",
-    "react-scripts": "2.0.4"
+    "react-scripts": "2.0.4",
+    "validator": "^13.5.2"
   },
   "scripts": {
     "start": "react-scripts start",
