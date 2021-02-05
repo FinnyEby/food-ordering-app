@@ -10,10 +10,12 @@
 
 .search-bar {
     width: 350px;
+    display: flex;
+    align-items: center;
 }
-div .search-bar ::after{
+div .search-bar ::after {
     border-bottom: 2px solid white !important;
-  }
+}
 
 .tabs {
     margin-bottom: 20px;

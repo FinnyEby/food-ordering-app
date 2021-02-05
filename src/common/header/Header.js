@@ -28,8 +28,6 @@ const customModalStyle = {
 
 const headerInputStyle = {
   color: "white",
-  underline: "white",
-  height: "auto",
 };
 
 const TabContainer = (props) => {
