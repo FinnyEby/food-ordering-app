@@ -52,8 +52,11 @@ class Header extends Component {
       value: 0,
       contactNumber: "",
       contactNoRequired: "dispNone",
+      invalidContactNo: "dispNone",
       password: "",
       passwordRequired: "dispNone",
+      unregisteredContactNo: "dispNone",
+      invalidCredentials: "dispNone",
       firstName: "",
       firstNameRequired: "dispNone",
       lastName: "",
@@ -66,6 +69,7 @@ class Header extends Component {
       signupcontactNo: "",
       signupcontactNoRequired: "dispNone",
       inValidsignupcontactNo: "dispNone",
+      registeredContactNo: "dispNone"
     };
   }
 
@@ -77,8 +81,11 @@ class Header extends Component {
     this.setState({ modalIsOpen: false });
     this.setState({ contactNumber: "" });
     this.setState({ contactNoRequired: "dispNone" });
+    this.setState({ invalidContactNo: "dispNone" });
     this.setState({ password: "" });
     this.setState({ passwordRequired: "dispNone" });
+    this.setState({unregisteredContactNo: "dispNone"});
+    this.setState({invalidCredentials: "dispNone"});
     this.setState({ firstName: "" });
     this.setState({ firstNameRequired: "dispNone" });
     this.setState({ lastName: "" });
@@ -91,6 +98,7 @@ class Header extends Component {
     this.setState({ signupcontactNo: "" });
     this.setState({ signupcontactNoRequired: "dispNone" });
     this.setState({ inValidsignupcontactNo: "dispNone" });
+    this.setState({registeredContactNo: "dispNone"});
   };
 
   tabChangeHandler = (e, value) => {
@@ -112,6 +120,13 @@ class Header extends Component {
     this.state.password === ""
       ? this.setState({ passwordRequired: "dispBlock" })
       : this.setState({ passwordRequired: "dispNone" });
+    //contact nmumber validation
+    if (this.state.contactNumber.length > 0) {
+      validator.isNumeric(this.state.contactNumber) &&
+      this.state.contactNumber.length === 10
+        ? this.setState({ invalidContactNo: "dispNone" })
+        : this.setState({ invalidContactNo: "dispBlock" });
+    }
   };
 
   firstNameChangeHandler = (e) => {
@@ -160,13 +175,14 @@ class Header extends Component {
       //check for length of atleast 8
       if (this.state.signupPassword.length < 8) weakPassword = true;
       //check for a lowercase character
-      else if(!/[a-z]/.test(this.state.signupPassword)) weakPassword = true;
+      else if (!/[a-z]/.test(this.state.signupPassword)) weakPassword = true;
       //check for an uppercase character
-      else if(!/[A-Z]/.test(this.state.signupPassword)) weakPassword = true;
+      else if (!/[A-Z]/.test(this.state.signupPassword)) weakPassword = true;
       //check for a special character
-      else if (!/[#@$%&*!^]/.test(this.state.signupPassword)) weakPassword = true;
+      else if (!/[#@$%&*!^]/.test(this.state.signupPassword))
+        weakPassword = true;
       //check for a numeric character
-      else if(!/\d/.test(this.state.signupPassword)) weakPassword = true;
+      else if (!/\d/.test(this.state.signupPassword)) weakPassword = true;
 
       weakPassword
         ? this.setState({ weakPassword: "dispBlock" })
@@ -241,6 +257,9 @@ class Header extends Component {
                 <FormHelperText className={this.state.contactNoRequired}>
                   <span className="red">required</span>
                 </FormHelperText>
+                <FormHelperText className={this.state.invalidContactNo}>
+                  <span className="red">Invalid Contact</span>
+                </FormHelperText>
               </FormControl>
               <br />
               <br />
@@ -254,6 +273,13 @@ class Header extends Component {
                 />
                 <FormHelperText className={this.state.passwordRequired}>
                   <span className="red">required</span>
+                </FormHelperText>
+                <br />
+                <FormHelperText className={this.state.unregisteredContactNo}>
+                  <span className="red">This contact number has not been registered!</span>
+                </FormHelperText>
+                <FormHelperText className={this.state.invalidCredentials}>
+                  <span className="red">Invalid Credentials</span>
                 </FormHelperText>
               </FormControl>
               <br />
@@ -347,6 +373,10 @@ class Header extends Component {
                     Contact No. must contain only numbers and must be 10 digits
                     long
                   </span>
+                </FormHelperText>
+                <br />
+                <FormHelperText className={this.state.registeredContactNo}>
+                  <span className="red">This contact number is already registered! Try other contact number.</span>
                 </FormHelperText>
               </FormControl>
               <br />
