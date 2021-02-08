@@ -14,7 +14,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import PropTypes from "prop-types";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import validator from 'validator';
+import validator from "validator";
 
 const customModalStyle = {
   content: {
@@ -29,7 +29,7 @@ const customModalStyle = {
 
 const headerInputStyle = {
   color: "white",
-  height: 35
+  height: 35,
 };
 
 const TabContainer = (props) => {
@@ -65,7 +65,7 @@ class Header extends Component {
       weakPassword: "dispNone",
       signupcontactNo: "",
       signupcontactNoRequired: "dispNone",
-      inValidsignupcontactNo: "dispNone"
+      inValidsignupcontactNo: "dispNone",
     };
   }
 
@@ -75,22 +75,22 @@ class Header extends Component {
 
   closeModalHandler = () => {
     this.setState({ modalIsOpen: false });
-    this.setState({ contactNumber: "" })
-    this.setState({ contactNoRequired: "dispNone" })
-    this.setState({ password: "" })
-    this.setState({ passwordRequired: "dispNone" })
-    this.setState({ firstName: "" })
-    this.setState({ firstNameRequired: "dispNone" })
-    this.setState({ lastName: "" })
-    this.setState({ email: "" })
-    this.setState({ emailRequired: "dispNone" })
-    this.setState({ inValidEmail: "dispNone" })
-    this.setState({ signupPassword: "" })
-    this.setState({ signupPasswordRequired: "dispNone" })
-    this.setState({ weakPassword: "dispNone" })
-    this.setState({ signupcontactNo: "" })
-    this.setState({ signupcontactNoRequired: "dispNone" })
-    this.setState({ inValidsignupcontactNo: "dispNone" })
+    this.setState({ contactNumber: "" });
+    this.setState({ contactNoRequired: "dispNone" });
+    this.setState({ password: "" });
+    this.setState({ passwordRequired: "dispNone" });
+    this.setState({ firstName: "" });
+    this.setState({ firstNameRequired: "dispNone" });
+    this.setState({ lastName: "" });
+    this.setState({ email: "" });
+    this.setState({ emailRequired: "dispNone" });
+    this.setState({ inValidEmail: "dispNone" });
+    this.setState({ signupPassword: "" });
+    this.setState({ signupPasswordRequired: "dispNone" });
+    this.setState({ weakPassword: "dispNone" });
+    this.setState({ signupcontactNo: "" });
+    this.setState({ signupcontactNoRequired: "dispNone" });
+    this.setState({ inValidsignupcontactNo: "dispNone" });
   };
 
   tabChangeHandler = (e, value) => {
@@ -135,7 +135,8 @@ class Header extends Component {
   };
 
   signupClickHandler = (e) => {
-    this.state.firstName === ""
+    //input validation
+    this.state.firstName.trim() === ""
       ? this.setState({ firstNameRequired: "dispBlock" })
       : this.setState({ firstNameRequired: "dispNone" });
     this.state.email === ""
@@ -147,25 +148,36 @@ class Header extends Component {
     this.state.signupcontactNo === ""
       ? this.setState({ signupcontactNoRequired: "dispBlock" })
       : this.setState({ signupcontactNoRequired: "dispNone" });
+    //email validation
     if (this.state.email.length > 0) {
       validator.isEmail(this.state.email)
         ? this.setState({ inValidEmail: "dispNone" })
-        : this.setState({ inValidEmail: "dispBlock" })
+        : this.setState({ inValidEmail: "dispBlock" });
     }
+    //password validation
     if (this.state.signupPassword.length > 0) {
-      let password = this.state.signupPassword
-      let weakPassword = false
-      if (password.length < 8)
-        weakPassword = true
+      let weakPassword = false;
+      //check for length of atleast 8
+      if (this.state.signupPassword.length < 8) weakPassword = true;
+      //check for a lowercase character
+      else if(!/[a-z]/.test(this.state.signupPassword)) weakPassword = true;
+      //check for an uppercase character
+      else if(!/[A-Z]/.test(this.state.signupPassword)) weakPassword = true;
+      //check for a special character
+      else if (!/[#@$%&*!^]/.test(this.state.signupPassword)) weakPassword = true;
+      //check for a numeric character
+      else if(!/\d/.test(this.state.signupPassword)) weakPassword = true;
 
       weakPassword
         ? this.setState({ weakPassword: "dispBlock" })
-        : this.setState({ weakPassword: "dispNone" })
+        : this.setState({ weakPassword: "dispNone" });
     }
+    //contact nmumber validation
     if (this.state.signupcontactNo.length > 0) {
-      validator.isNumeric(this.state.signupcontactNo) && this.state.signupcontactNo.length === 10
+      validator.isNumeric(this.state.signupcontactNo) &&
+      this.state.signupcontactNo.length === 10
         ? this.setState({ inValidsignupcontactNo: "dispNone" })
-        : this.setState({ inValidsignupcontactNo: "dispBlock" })
+        : this.setState({ inValidsignupcontactNo: "dispBlock" });
     }
   };
 
@@ -311,7 +323,10 @@ class Header extends Component {
                   <span className="red">required</span>
                 </FormHelperText>
                 <FormHelperText className={this.state.weakPassword}>
-                  <span className="red">Password must contain at least one capital letter, one small letter, one number, and one special character</span>
+                  <span className="red">
+                    Password must contain at least one capital letter, one small
+                    letter, one number, and one special character
+                  </span>
                 </FormHelperText>
               </FormControl>
               <br />
@@ -328,7 +343,10 @@ class Header extends Component {
                   <span className="red">required</span>
                 </FormHelperText>
                 <FormHelperText className={this.state.inValidsignupcontactNo}>
-                  <span className="red">Contact No. must contain only numbers and must be 10 digits long</span>
+                  <span className="red">
+                    Contact No. must contain only numbers and must be 10 digits
+                    long
+                  </span>
                 </FormHelperText>
               </FormControl>
               <br />

@@ -22,6 +22,8 @@ div .search-bar ::after {
 .tab-container {
     padding: 0;
     text-align: center;
+    overflow-y: auto;
+    height: 100%;
 }
 
 .red {
