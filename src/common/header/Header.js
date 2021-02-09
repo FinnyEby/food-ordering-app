@@ -15,6 +15,9 @@ import InputLabel from "@material-ui/core/InputLabel";
 import PropTypes from "prop-types";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import validator from "validator";
+import Snackbar from "@material-ui/core/Snackbar";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 
 const customModalStyle = {
   content: {
@@ -48,7 +51,11 @@ class Header extends Component {
   constructor() {
     super();
     this.state = {
+      userLoggedIn: false,
+      anchorEl: null,
       modalIsOpen: false,
+      loginSnackbarIsOpen: false,
+      signupSnackbarIsOpen: false,
       value: 0,
       contactNumber: "",
       contactNoRequired: "dispNone",
@@ -69,12 +76,28 @@ class Header extends Component {
       signupcontactNo: "",
       signupcontactNoRequired: "dispNone",
       inValidsignupcontactNo: "dispNone",
-      registeredContactNo: "dispNone"
+      registeredContactNo: "dispNone",
     };
   }
 
   openModalHandler = () => {
     this.setState({ modalIsOpen: true });
+  };
+
+  closeSnackbarHandler = (e) => {
+    this.setState({ loginSnackbarIsOpen: false });
+  };
+
+  closeSignupSnackbarHandler = (e) => {
+    this.setState({ signupSnackbarIsOpen: false });
+  };
+
+  openMenuHandler = (e) => {
+    this.setState({ anchorEl: e.currentTarget });
+  };
+
+  closeMenuHandler = () => {
+    this.setState({ anchorEl: null });
   };
 
   closeModalHandler = () => {
@@ -84,8 +107,8 @@ class Header extends Component {
     this.setState({ invalidContactNo: "dispNone" });
     this.setState({ password: "" });
     this.setState({ passwordRequired: "dispNone" });
-    this.setState({unregisteredContactNo: "dispNone"});
-    this.setState({invalidCredentials: "dispNone"});
+    this.setState({ unregisteredContactNo: "dispNone" });
+    this.setState({ invalidCredentials: "dispNone" });
     this.setState({ firstName: "" });
     this.setState({ firstNameRequired: "dispNone" });
     this.setState({ lastName: "" });
@@ -98,7 +121,7 @@ class Header extends Component {
     this.setState({ signupcontactNo: "" });
     this.setState({ signupcontactNoRequired: "dispNone" });
     this.setState({ inValidsignupcontactNo: "dispNone" });
-    this.setState({registeredContactNo: "dispNone"});
+    this.setState({ registeredContactNo: "dispNone" });
   };
 
   tabChangeHandler = (e, value) => {
@@ -126,6 +149,14 @@ class Header extends Component {
       this.state.contactNumber.length === 10
         ? this.setState({ invalidContactNo: "dispNone" })
         : this.setState({ invalidContactNo: "dispBlock" });
+    }
+    if (
+      this.state.contactNoRequired === "dispNone" &&
+      this.state.passwordRequired === "dispNone"
+    ) {
+      this.setState({ loginSnackbarIsOpen: true });
+      this.closeModalHandler()
+      this.setState({userLoggedIn: true})
     }
   };
 
@@ -188,14 +219,32 @@ class Header extends Component {
         ? this.setState({ weakPassword: "dispBlock" })
         : this.setState({ weakPassword: "dispNone" });
     }
-    //contact nmumber validation
+    //contact number validation
     if (this.state.signupcontactNo.length > 0) {
       validator.isNumeric(this.state.signupcontactNo) &&
       this.state.signupcontactNo.length === 10
         ? this.setState({ inValidsignupcontactNo: "dispNone" })
         : this.setState({ inValidsignupcontactNo: "dispBlock" });
     }
+
+    if (
+      this.state.firstNameRequired === "dispNone" &&
+      this.state.emailRequired === "dispNone" &&
+      this.state.inValidEmail === "dispNone" &&
+      this.state.signupPasswordRequired === "dispNone" &&
+      this.state.weakPassword === "dispNone" &&
+      this.state.signupcontactNoRequired === "dispNone" &&
+      this.state.inValidsignupcontactNo === "dispNone" &&
+      this.state.registeredContactNo === "dispNone"
+    ) {
+      //this.setState({ value: 0 });
+      this.setState({ signupSnackbarIsOpen: true });
+    }
   };
+
+  logoutClickHandler = () => {
+    this.setState({ userLoggedIn: false})
+  }
 
   render() {
     return (
@@ -218,14 +267,44 @@ class Header extends Component {
               />
             </div>
             <div className="userButton">
-              <Button
-                variant="contained"
-                color="default"
-                startIcon={<AccountCircle />}
-                onClick={this.openModalHandler}
-              >
-                LOGIN
-              </Button>
+              {this.state.userLoggedIn ? (
+                <div>
+                  <Button
+                    variant="contained"
+                    color="default"
+                    startIcon={<AccountCircle />}
+                    onClick={this.openMenuHandler}
+                  >
+                    Finn
+                  </Button>
+                  <Menu
+                    id="profileMenu"
+                    anchorEl={this.state.anchorEl}
+                    getContentAnchorEl={null}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                    transformOrigin={{ vertical: "top", horizontal: "center" }}
+                    keepMounted
+                    open={Boolean(this.state.anchorEl)}
+                    onClose={this.closeMenuHandler}
+                  >
+                    <MenuItem>My Profile</MenuItem>
+                    <MenuItem
+                      onClick = {this.logoutClickHandler}
+                    >
+                      Logout
+                    </MenuItem>
+                  </Menu>
+                </div>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="default"
+                  startIcon={<AccountCircle />}
+                  onClick={this.openModalHandler}
+                >
+                  LOGIN
+                </Button>
+              )}
             </div>
           </div>
         </header>
@@ -276,7 +355,9 @@ class Header extends Component {
                 </FormHelperText>
                 <br />
                 <FormHelperText className={this.state.unregisteredContactNo}>
-                  <span className="red">This contact number has not been registered!</span>
+                  <span className="red">
+                    This contact number has not been registered!
+                  </span>
                 </FormHelperText>
                 <FormHelperText className={this.state.invalidCredentials}>
                   <span className="red">Invalid Credentials</span>
@@ -376,7 +457,10 @@ class Header extends Component {
                 </FormHelperText>
                 <br />
                 <FormHelperText className={this.state.registeredContactNo}>
-                  <span className="red">This contact number is already registered! Try other contact number.</span>
+                  <span className="red">
+                    This contact number is already registered! Try other contact
+                    number.
+                  </span>
                 </FormHelperText>
               </FormControl>
               <br />
@@ -391,6 +475,26 @@ class Header extends Component {
             </TabContainer>
           )}
         </Modal>
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          open={this.state.loginSnackbarIsOpen}
+          autoHideDuration={2000}
+          onClose={this.closeSnackbarHandler}
+          message="Logged in successfully!"
+        />
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          open={this.state.signupSnackbarIsOpen}
+          autoHideDuration={2000}
+          onClose={this.closeSignupSnackbarHandler}
+          message="Registered successfully! Please login now!"
+        />
       </div>
     );
   }
