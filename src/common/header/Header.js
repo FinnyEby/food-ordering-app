@@ -51,7 +51,7 @@ class Header extends Component {
   constructor() {
     super();
     this.state = {
-      userLoggedIn: false,
+      userLoggedIn: true,
       anchorEl: null,
       modalIsOpen: false,
       loginSnackbarIsOpen: false,
@@ -150,6 +150,9 @@ class Header extends Component {
         ? this.setState({ invalidContactNo: "dispNone" })
         : this.setState({ invalidContactNo: "dispBlock" });
     }
+  };
+
+  validateUser = () => {
     if (
       this.state.contactNoRequired === "dispNone" &&
       this.state.passwordRequired === "dispNone"
@@ -158,7 +161,7 @@ class Header extends Component {
       this.closeModalHandler();
       this.setState({ userLoggedIn: true });
     }
-  };
+  }
 
   firstNameChangeHandler = (e) => {
     this.setState({ firstName: e.target.value });
@@ -226,7 +229,9 @@ class Header extends Component {
         ? this.setState({ inValidsignupcontactNo: "dispNone" })
         : this.setState({ inValidsignupcontactNo: "dispBlock" });
     }
+  };
 
+  validateUserForSignUp = () => {
     if (
       this.state.firstNameRequired === "dispNone" &&
       this.state.emailRequired === "dispNone" &&
@@ -237,10 +242,10 @@ class Header extends Component {
       this.state.inValidsignupcontactNo === "dispNone" &&
       this.state.registeredContactNo === "dispNone"
     ) {
-      //this.setState({ value: 0 });
+      this.setState({ value: 0 });
       this.setState({ signupSnackbarIsOpen: true });
     }
-  };
+  }
 
   logoutClickHandler = () => {
     this.setState({ userLoggedIn: false });
