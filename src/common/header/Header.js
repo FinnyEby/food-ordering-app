@@ -155,8 +155,8 @@ class Header extends Component {
       this.state.passwordRequired === "dispNone"
     ) {
       this.setState({ loginSnackbarIsOpen: true });
-      this.closeModalHandler()
-      this.setState({userLoggedIn: true})
+      this.closeModalHandler();
+      this.setState({ userLoggedIn: true });
     }
   };
 
@@ -243,8 +243,9 @@ class Header extends Component {
   };
 
   logoutClickHandler = () => {
-    this.setState({ userLoggedIn: false})
-  }
+    this.setState({ userLoggedIn: false });
+    this.closeMenuHandler()
+  };
 
   render() {
     return (
@@ -277,23 +278,6 @@ class Header extends Component {
                   >
                     Finn
                   </Button>
-                  <Menu
-                    id="profileMenu"
-                    anchorEl={this.state.anchorEl}
-                    getContentAnchorEl={null}
-                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                    transformOrigin={{ vertical: "top", horizontal: "center" }}
-                    keepMounted
-                    open={Boolean(this.state.anchorEl)}
-                    onClose={this.closeMenuHandler}
-                  >
-                    <MenuItem>My Profile</MenuItem>
-                    <MenuItem
-                      onClick = {this.logoutClickHandler}
-                    >
-                      Logout
-                    </MenuItem>
-                  </Menu>
                 </div>
               ) : (
                 <Button
@@ -305,6 +289,19 @@ class Header extends Component {
                   LOGIN
                 </Button>
               )}
+              <Menu
+                id="profileMenu"
+                anchorEl={this.state.anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                transformOrigin={{ vertical: "top", horizontal: "center" }}
+                keepMounted
+                open={Boolean(this.state.anchorEl)}
+                onClose={this.closeMenuHandler}
+              >
+                <MenuItem>My Profile</MenuItem>
+                <MenuItem onClick={this.logoutClickHandler}>Logout</MenuItem>
+              </Menu>
             </div>
           </div>
         </header>
