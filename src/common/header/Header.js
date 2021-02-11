@@ -51,7 +51,7 @@ class Header extends Component {
   constructor() {
     super();
     this.state = {
-      userLoggedIn: true,
+      userLoggedIn: false,
       anchorEl: null,
       modalIsOpen: false,
       loginSnackbarIsOpen: false,
@@ -77,6 +77,7 @@ class Header extends Component {
       signupcontactNoRequired: "dispNone",
       inValidsignupcontactNo: "dispNone",
       registeredContactNo: "dispNone",
+      userFirstName: "Finn",
     };
   }
 
@@ -150,6 +151,29 @@ class Header extends Component {
         ? this.setState({ invalidContactNo: "dispNone" })
         : this.setState({ invalidContactNo: "dispBlock" });
     }
+
+    //xmlhttprequest for login
+    if(this.state.contactNumber && this.state.password) {
+      let data = null;
+      let xhr = new XMLHttpRequest();
+      let that = this;
+      xhr.addEventListener("readystatechange", function() {
+        if (this.readyState === 4 && this.status === 200) {
+          let response = JSON.parse(this.responseText)
+          that.setState({userFirstName: response.first_name})
+          that.setState({ loginSnackbarIsOpen: true });
+          that.closeModalHandler();
+          that.setState({ userLoggedIn: true });
+        }
+        else if(this.status === 401){
+          that.setState({invalidCredentials: "dispBlock"})
+        }
+      });
+      xhr.open("POST", "http://localhost:8080/api/customer/login");
+      xhr.setRequestHeader("authorization", "Basic "+btoa(this.state.contactNumber+":"+this.state.password));
+      xhr.setRequestHeader("Cache-Control", "no-cache")
+      xhr.send(data);
+    }
   };
 
   validateUser = () => {
@@ -161,7 +185,7 @@ class Header extends Component {
       this.closeModalHandler();
       this.setState({ userLoggedIn: true });
     }
-  }
+  };
 
   firstNameChangeHandler = (e) => {
     this.setState({ firstName: e.target.value });
@@ -229,6 +253,27 @@ class Header extends Component {
         ? this.setState({ inValidsignupcontactNo: "dispNone" })
         : this.setState({ inValidsignupcontactNo: "dispBlock" });
     }
+
+    //xmlhttprequest for signup
+    let data = {
+      "contact_number": "0986754321",
+      "email_address": "temp@test.com",
+      "first_name": "temp",
+      "last_name": "test",
+      "password": "7ru$1H!m"
+    };
+    let xhr = new XMLHttpRequest();
+    //let that = this;
+    xhr.addEventListener("readystatechange", function() {
+      if (this.readyState === 4 && this.status === 201) {
+        console.log(JSON.parse(this.responseText))
+      }
+      else
+        console.log("no contact with server")
+    });
+    xhr.open("POST", "https://cors-anywhere.herokuapp.com/http://localhost:8080/api/customer/signup");
+    xhr.setRequestHeader("origin", "x-requested-with");
+    xhr.send(data);
   };
 
   validateUserForSignUp = () => {
@@ -245,11 +290,11 @@ class Header extends Component {
       this.setState({ value: 0 });
       this.setState({ signupSnackbarIsOpen: true });
     }
-  }
+  };
 
   logoutClickHandler = () => {
     this.setState({ userLoggedIn: false });
-    this.closeMenuHandler()
+    this.closeMenuHandler();
   };
 
   render() {
@@ -281,7 +326,7 @@ class Header extends Component {
                     startIcon={<AccountCircle />}
                     onClick={this.openMenuHandler}
                   >
-                    Finn
+                    {this.state.userFirstName}
                   </Button>
                 </div>
               ) : (
