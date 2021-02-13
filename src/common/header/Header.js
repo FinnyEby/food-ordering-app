@@ -51,7 +51,8 @@ class Header extends Component {
   constructor() {
     super();
     this.state = {
-      userLoggedIn: false,
+      userLoggedIn:
+        sessionStorage.getItem("access-token") == null ? false : true,
       anchorEl: null,
       modalIsOpen: false,
       loginSnackbarIsOpen: false,
@@ -159,8 +160,14 @@ class Header extends Component {
       let that = this;
       xhr.addEventListener("readystatechange", function() {
         if (this.readyState === 4 && this.status === 200) {
+          //getting and storing access-token in session-storage
+          sessionStorage.setItem(
+            "access-token",
+            xhr.getResponseHeader("access-token")
+          );
+          // getting user details
           let response = JSON.parse(this.responseText);
-          that.setState({ userFirstName: response.first_name });
+          that.setState({ user: response });
           that.setState({ loginSnackbarIsOpen: true });
           that.closeModalHandler();
           that.setState({ userLoggedIn: true });
@@ -177,17 +184,6 @@ class Header extends Component {
       xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
       xhr.setRequestHeader("Cache-Control", "no-cache");
       xhr.send(data);
-    }
-  };
-
-  validateUser = () => {
-    if (
-      this.state.contactNoRequired === "dispNone" &&
-      this.state.passwordRequired === "dispNone"
-    ) {
-      this.setState({ loginSnackbarIsOpen: true });
-      this.closeModalHandler();
-      this.setState({ userLoggedIn: true });
     }
   };
 
@@ -260,51 +256,68 @@ class Header extends Component {
 
     //xmlhttprequest for signup
     //if (this.state.firstName && this.state.email && this.state.signupPassword && this.state.signupcontactNo) {
-      let data = {
-        "contact_number": "0986754321",
-        "email_address": "temp@test.com",
-        "first_name": "temp",
-        "last_name": "test",
-        "password": "7ru$1H!m"
-      }
-      let xhr = new XMLHttpRequest();
-      //let that = this;
-      xhr.addEventListener("readystatechange", function() {
-        if (this.readyState === 4) {
-          console.log(JSON.parse(this.responseText));
-        } else console.log("no contact with server");
-      });
-      xhr.open( "POST",  this.props.baseUrl + "/customer/signup")
-        //"https://cors-anywhere.herokuapp.com/http://localhost:8080/api/customer/signup");
-      xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
-      xhr.setRequestHeader("Cache-Control", "no-cache"); //"X-Requested-With": "XMLHttpRequest"
-      xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")
-      xhr.setRequestHeader("content-type", "application/json;charset=UTF-8")
-      xhr.setRequestHeader("x-requested-with", "XMLHttpRequest"); //"access-control-allow-origin": "http://localhost:8080"
-      xhr.setRequestHeader("access-control-allow-origin", "http://localhost:8080")
-      xhr.send(data);
+    let data = {
+      contact_number: "0986754321",
+      email_address: "temp@test.com",
+      first_name: "temp",
+      last_name: "test",
+      password: "7ru$1H!m",
+    };
+    let xhr = new XMLHttpRequest();
+    //let that = this;
+    xhr.addEventListener("readystatechange", function() {
+      if (this.readyState === 4) {
+        console.log(JSON.parse(this.responseText));
+      } else console.log("no contact with server");
+    });
+    xhr.open("POST", this.props.baseUrl + "/customer/signup");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Cache-Control", "no-cache");
+    //"https://cors-anywhere.herokuapp.com/http://localhost:8080/api/customer/signup");
+    // xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+    // xhr.setRequestHeader("Cache-Control", "no-cache"); //"X-Requested-With": "XMLHttpRequest"
+    // xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+    // xhr.setRequestHeader("content-type", "application/json;charset=UTF-8")
+    // xhr.setRequestHeader("x-requested-with", "XMLHttpRequest"); //"access-control-allow-origin": "http://localhost:8080"
+    // xhr.setRequestHeader("access-control-allow-origin", "http://localhost:8080")
+    xhr.send(data);
     //}
   };
 
-  validateUserForSignUp = () => {
-    if (
-      this.state.firstNameRequired === "dispNone" &&
-      this.state.emailRequired === "dispNone" &&
-      this.state.inValidEmail === "dispNone" &&
-      this.state.signupPasswordRequired === "dispNone" &&
-      this.state.weakPassword === "dispNone" &&
-      this.state.signupcontactNoRequired === "dispNone" &&
-      this.state.inValidsignupcontactNo === "dispNone" &&
-      this.state.registeredContactNo === "dispNone"
-    ) {
-      this.setState({ value: 0 });
-      this.setState({ signupSnackbarIsOpen: true });
-    }
-  };
+  // validateUserForSignUp = () => {
+  //   if (
+  //     this.state.firstNameRequired === "dispNone" &&
+  //     this.state.emailRequired === "dispNone" &&
+  //     this.state.inValidEmail === "dispNone" &&
+  //     this.state.signupPasswordRequired === "dispNone" &&
+  //     this.state.weakPassword === "dispNone" &&
+  //     this.state.signupcontactNoRequired === "dispNone" &&
+  //     this.state.inValidsignupcontactNo === "dispNone" &&
+  //     this.state.registeredContactNo === "dispNone"
+  //   ) {
+  //     this.setState({ value: 0 });
+  //     this.setState({ signupSnackbarIsOpen: true });
+  //   }
+  // };
 
   logoutClickHandler = () => {
-    this.setState({ userLoggedIn: false });
     this.closeMenuHandler();
+    //request to logout
+    let data = null;
+    let xhr = new XMLHttpRequest();
+    let that = this;
+    let accessToken = sessionStorage.getItem("access-token");
+    xhr.addEventListener("readystatechange", function() {
+      if (this.readyState === 4 && this.status === 200) {
+        // getting user details
+        that.setState({ userLoggedIn: false });
+        sessionStorage.removeItem("access-token");
+      }
+    });
+    xhr.open("POST", this.props.baseUrl+"/customer/logout");
+    xhr.setRequestHeader("authorization", "Bearer "+accessToken);
+    xhr.setRequestHeader("Cache-Control", "no-cache");
+    xhr.send(data);
   };
 
   render() {
@@ -336,7 +349,7 @@ class Header extends Component {
                     startIcon={<AccountCircle />}
                     onClick={this.openMenuHandler}
                   >
-                    {this.state.userFirstName}
+                    {this.state.user.first_name}
                   </Button>
                 </div>
               ) : (
