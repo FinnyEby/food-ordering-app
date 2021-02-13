@@ -1,9 +1,26 @@
-.header {
-    padding: 10px 15px 10px 15px;
-    background-color: hsl(199deg 20% 18%);
-    color: aliceblue;
-    display: flex;
-    justify-content: space-between;
+@media screen and (min-width: 601px) {
+    .header {
+        padding: 10px 15px 10px 15px;
+        background-color: hsl(199deg 20% 18%);
+        color: aliceblue;
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .header {
+        height: 140px;
+        padding: 10px 15px 10px 15px;
+        background-color: hsl(199deg 20% 18%);
+        color: aliceblue;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .logo .search-bar .userButton {
+        padding: 20px;
+    }
 }
 
 .search-bar {
