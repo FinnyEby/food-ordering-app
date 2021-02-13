@@ -255,50 +255,28 @@ class Header extends Component {
     }
 
     //xmlhttprequest for signup
-    //if (this.state.firstName && this.state.email && this.state.signupPassword && this.state.signupcontactNo) {
-    let data = {
-      contact_number: "0986754321",
-      email_address: "temp@test.com",
-      first_name: "temp",
-      last_name: "test",
-      password: "7ru$1H!m",
-    };
+    if (this.state.firstName && this.state.email && this.state.signupPassword && this.state.signupcontactNo) {
+    let data = JSON.stringify({
+      contact_number: this.state.signupcontactNo,
+      email_address: this.state.email,
+      first_name: this.state.firstName,
+      last_name: this.state.lastName,
+      password: this.state.signupPassword,
+    });
     let xhr = new XMLHttpRequest();
-    //let that = this;
+    let that = this;
     xhr.addEventListener("readystatechange", function() {
-      if (this.readyState === 4) {
-        console.log(JSON.parse(this.responseText));
-      } else console.log("no contact with server");
+      if (this.readyState === 4 && this.status === 201) {
+        that.setState({ value: 0 });
+        that.setState({ signupSnackbarIsOpen: true });
+      }
     });
     xhr.open("POST", this.props.baseUrl + "/customer/signup");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Cache-Control", "no-cache");
-    //"https://cors-anywhere.herokuapp.com/http://localhost:8080/api/customer/signup");
-    // xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
-    // xhr.setRequestHeader("Cache-Control", "no-cache"); //"X-Requested-With": "XMLHttpRequest"
-    // xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")
-    // xhr.setRequestHeader("content-type", "application/json;charset=UTF-8")
-    // xhr.setRequestHeader("x-requested-with", "XMLHttpRequest"); //"access-control-allow-origin": "http://localhost:8080"
-    // xhr.setRequestHeader("access-control-allow-origin", "http://localhost:8080")
     xhr.send(data);
-    //}
+    }
   };
-
-  // validateUserForSignUp = () => {
-  //   if (
-  //     this.state.firstNameRequired === "dispNone" &&
-  //     this.state.emailRequired === "dispNone" &&
-  //     this.state.inValidEmail === "dispNone" &&
-  //     this.state.signupPasswordRequired === "dispNone" &&
-  //     this.state.weakPassword === "dispNone" &&
-  //     this.state.signupcontactNoRequired === "dispNone" &&
-  //     this.state.inValidsignupcontactNo === "dispNone" &&
-  //     this.state.registeredContactNo === "dispNone"
-  //   ) {
-  //     this.setState({ value: 0 });
-  //     this.setState({ signupSnackbarIsOpen: true });
-  //   }
-  // };
 
   logoutClickHandler = () => {
     this.closeMenuHandler();
