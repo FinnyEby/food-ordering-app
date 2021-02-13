@@ -139,6 +139,8 @@ class Header extends Component {
   };
 
   loginClickHandler = (e) => {
+    this.setState({ unregisteredContactNo: "dispNone" });
+    this.setState({ invalidCredentials: "dispNone" });
     this.state.contactNumber === ""
       ? this.setState({ contactNoRequired: "dispBlock" })
       : this.setState({ contactNoRequired: "dispNone" });
@@ -154,36 +156,48 @@ class Header extends Component {
     }
 
     //xmlhttprequest for login
-    if (this.state.contactNumber && this.state.password) {
-      let data = null;
-      let xhr = new XMLHttpRequest();
-      let that = this;
-      xhr.addEventListener("readystatechange", function() {
-        if (this.readyState === 4 && this.status === 200) {
-          //getting and storing access-token in session-storage
-          sessionStorage.setItem(
-            "access-token",
-            xhr.getResponseHeader("access-token")
-          );
-          // getting user details
-          let response = JSON.parse(this.responseText);
-          that.setState({ user: response });
-          that.setState({ loginSnackbarIsOpen: true });
-          that.closeModalHandler();
-          that.setState({ userLoggedIn: true });
-        } else if (this.status === 401) {
-          that.setState({ invalidCredentials: "dispBlock" });
-        } else {
-        }
-      });
-      xhr.open("POST", this.props.baseUrl + "/customer/login");
-      xhr.setRequestHeader(
-        "authorization",
-        "Basic " + btoa(this.state.contactNumber + ":" + this.state.password)
-      );
-      xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
-      xhr.setRequestHeader("Cache-Control", "no-cache");
-      xhr.send(data);
+    try {
+      if (this.state.contactNumber && this.state.password) {
+        let data = null;
+        let xhr = new XMLHttpRequest();
+        let that = this;
+        xhr.addEventListener("readystatechange", function() {
+          if (this.readyState === 4 && this.status === 200) {
+            //getting and storing access-token in session-storage
+            sessionStorage.setItem(
+              "access-token",
+              xhr.getResponseHeader("access-token")
+            );
+            // getting user details
+            let response = JSON.parse(this.responseText);
+            that.setState({ user: response });
+            that.setState({ loginSnackbarIsOpen: true });
+            that.closeModalHandler();
+            that.setState({ userLoggedIn: true });
+          } else if (this.readyState === 4) {
+            let response = JSON.parse(this.responseText);
+            if (that.state.invalidContactNo === "dispNone") {
+              if (response.code === "ATH-001") {
+                console.log(JSON.parse(this.responseText));
+                that.setState({ unregisteredContactNo: "dispBlock" });
+              } else {
+                console.log(JSON.parse(this.responseText));
+                that.setState({ invalidCredentials: "dispBlock" });
+              }
+            }
+          }
+        });
+        xhr.open("POST", this.props.baseUrl + "/customer/login");
+        xhr.setRequestHeader(
+          "authorization",
+          "Basic " + btoa(this.state.contactNumber + ":" + this.state.password)
+        );
+        xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+        xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.send(data);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -208,6 +222,7 @@ class Header extends Component {
   };
 
   signupClickHandler = (e) => {
+    this.setState({ registeredContactNo: "dispNone" });
     //input validation
     this.state.firstName.trim() === ""
       ? this.setState({ firstNameRequired: "dispBlock" })
@@ -255,26 +270,43 @@ class Header extends Component {
     }
 
     //xmlhttprequest for signup
-    if (this.state.firstName && this.state.email && this.state.signupPassword && this.state.signupcontactNo) {
-    let data = JSON.stringify({
-      contact_number: this.state.signupcontactNo,
-      email_address: this.state.email,
-      first_name: this.state.firstName,
-      last_name: this.state.lastName,
-      password: this.state.signupPassword,
-    });
-    let xhr = new XMLHttpRequest();
-    let that = this;
-    xhr.addEventListener("readystatechange", function() {
-      if (this.readyState === 4 && this.status === 201) {
-        that.setState({ value: 0 });
-        that.setState({ signupSnackbarIsOpen: true });
+    try {
+      if (
+        this.state.firstName &&
+        this.state.email &&
+        this.state.signupPassword &&
+        this.state.signupcontactNo
+      ) {
+        let data = JSON.stringify({
+          contact_number: this.state.signupcontactNo,
+          email_address: this.state.email,
+          first_name: this.state.firstName,
+          last_name: this.state.lastName,
+          password: this.state.signupPassword,
+        });
+        let xhr = new XMLHttpRequest();
+        let that = this;
+        xhr.addEventListener("readystatechange", function() {
+          if (this.readyState === 4 && this.status === 201) {
+            that.setState({ value: 0 });
+            that.setState({ signupSnackbarIsOpen: true });
+          } else if (this.readyState === 4) {
+            let response = JSON.parse(this.responseText);
+            if (response.code === "SGR-001") {
+              console.log(JSON.parse(this.responseText));
+              that.setState({ registeredContactNo: "dispBlock" });
+            } else {
+              console.log(JSON.parse(this.responseText));
+            }
+          }
+        });
+        xhr.open("POST", this.props.baseUrl + "/customer/signup");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.send(data);
       }
-    });
-    xhr.open("POST", this.props.baseUrl + "/customer/signup");
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.setRequestHeader("Cache-Control", "no-cache");
-    xhr.send(data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -292,8 +324,8 @@ class Header extends Component {
         sessionStorage.removeItem("access-token");
       }
     });
-    xhr.open("POST", this.props.baseUrl+"/customer/logout");
-    xhr.setRequestHeader("authorization", "Bearer "+accessToken);
+    xhr.open("POST", this.props.baseUrl + "/customer/logout");
+    xhr.setRequestHeader("authorization", "Bearer " + accessToken);
     xhr.setRequestHeader("Cache-Control", "no-cache");
     xhr.send(data);
   };
