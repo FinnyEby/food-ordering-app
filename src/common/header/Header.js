@@ -18,6 +18,7 @@ import validator from "validator";
 import Snackbar from "@material-ui/core/Snackbar";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import { Link } from 'react-router-dom';
 
 const customModalStyle = {
   content: {
@@ -386,7 +387,7 @@ class Header extends Component {
                 open={Boolean(this.state.anchorEl)}
                 onClose={this.closeMenuHandler}
               >
-                <MenuItem>My Profile</MenuItem>
+                <MenuItem component={Link} to={"/profile"} onClick={this.closeMenuHandler}>My Profile</MenuItem>
                 <MenuItem onClick={this.logoutClickHandler}>Logout</MenuItem>
               </Menu>
             </div>
