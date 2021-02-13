@@ -78,8 +78,11 @@ class Header extends Component {
       signupcontactNoRequired: "dispNone",
       inValidsignupcontactNo: "dispNone",
       registeredContactNo: "dispNone",
-      userFirstName: "Finn",
     };
+  }
+
+  searchBarTextChangeHandler = (e) => {
+    this.props.filterRestaurants(e.target.value)
   }
 
   openModalHandler = () => {
@@ -343,6 +346,7 @@ class Header extends Component {
                 fullWidth
                 placeholder="Search by Restaurant Name"
                 style={headerInputStyle}
+                onChange={this.searchBarTextChangeHandler}
                 startAdornment={
                   <InputAdornment>
                     <SearchIcon />
